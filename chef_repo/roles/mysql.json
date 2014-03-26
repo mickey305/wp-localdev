@@ -1,0 +1,26 @@
+{
+
+	"name": "mysql",
+	"json_class": "Chef::Role",
+
+	// override default-attribute
+	"default_attributes": {
+		"wpserver": {
+			"db": {
+
+				// give an account of this only in case of reset
+				"old-rootpass" : "",
+
+				// mysql root password(in case of reset, please insert new password)
+				"rootpass"     : "",
+				// wordpress DB information
+				"database"     : "wordpress_db",
+				"user"         : "wp_user",
+				"pass"         : "HFt33uZa80A"
+
+
+			}
+		}
+	}
+
+}

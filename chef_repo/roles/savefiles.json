@@ -1,0 +1,23 @@
+{
+
+	"name": "savefiles",
+	"json_class": "Chef::Role",
+
+	// override default-attribute
+	"default_attributes": {
+		"wpserver": {
+			"save-content": {
+
+				"name" : [
+
+					// add files or directory to save-list
+					"wp-config.php",
+					"wp-content/"
+
+				]
+
+			}
+		}
+	}
+
+}

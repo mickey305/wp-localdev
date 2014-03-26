@@ -1,0 +1,60 @@
+{
+
+	"pkg-wp":{
+
+		"url"         : "http://ja.wordpress.org/",
+		"version"     : "wordpress-3.8-ja",
+		// wordpress file extension is [.tar.gz] or [.zip]
+		"ext"         : ".tar.gz",
+
+		"update-flag" : true
+
+	},
+
+	"mysql-conf": {
+
+		"reset-rootpass-flag" : false
+
+	},
+
+	"ip-address" : {
+
+		"local" : "10.0.22.25"
+
+	},
+
+	"httpd":{
+
+		"timeout"   : 60,
+		"requests"  : 100,
+		// port number(to access web server from http etc)
+		"port"      : 80,
+		// Apache info -- default On
+		"signature" : "Off"
+
+	},
+	"htaccess":{
+
+		// permission -- default false(block DDos attack)
+		"xmlrpc-permit-flag" : false,
+
+		"xmlrpc-permit-ip" : ""
+
+	},
+
+	"owner":{
+
+		// change this name
+		"name" : "hoge"
+
+	},
+
+	"run_list":[
+
+		"role[mysql]",
+		"role[savefiles]",
+		"recipe[wpserver]"
+
+	]
+
+}
