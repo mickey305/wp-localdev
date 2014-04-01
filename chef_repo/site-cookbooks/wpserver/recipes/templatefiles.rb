@@ -2,24 +2,49 @@
 
 
 # create wp config file(using wp-config-sample.php version3.8)
-e = template "wp-config.php" do
-	path "/vagrant/wordpress/wp-config.php"
-	source "wp-config.php.erb"
-	mode 00644
-	action :nothing
-	variables(
-		:key_auth    => node['wpserver']['wp']['key-auth'],
-		:key_secure  => node['wpserver']['wp']['key-secure'],
-		:key_logged  => node['wpserver']['wp']['key-logged'],
-		:key_nonce   => node['wpserver']['wp']['key-nonce'],
-		:salt_auth   => node['wpserver']['wp']['salt-auth'],
-		:salt_secure => node['wpserver']['wp']['salt-secure'],
-		:salt_logged => node['wpserver']['wp']['salt-logged'],
-		:salt_nonce  => node['wpserver']['wp']['salt-nonce']
-	)
-	not_if {File.exist?("/vagrant/wordpress/wp-config.php")}
+if node['httpd']['port'] == 80 then
+	e = template "wp-config.php" do
+		path "/vagrant/wordpress/wp-config.php"
+		source "wp-config.php.erb"
+		mode 00644
+		action :nothing
+		variables(
+			:key_auth    => node['wpserver']['wp']['key-auth'],
+			:key_secure  => node['wpserver']['wp']['key-secure'],
+			:key_logged  => node['wpserver']['wp']['key-logged'],
+			:key_nonce   => node['wpserver']['wp']['key-nonce'],
+			:salt_auth   => node['wpserver']['wp']['salt-auth'],
+			:salt_secure => node['wpserver']['wp']['salt-secure'],
+			:salt_logged => node['wpserver']['wp']['salt-logged'],
+			:salt_nonce  => node['wpserver']['wp']['salt-nonce'],
+			:colon       => node['wpserver']['into']['nonspace'],
+			:port        => node['wpserver']['into']['nonspace']
+		)
+		not_if {File.exist?("/vagrant/wordpress/wp-config.php")}
+	end
+	e.run_action(:create)
+else
+	e = template "wp-config.php" do
+		path "/vagrant/wordpress/wp-config.php"
+		source "wp-config.php.erb"
+		mode 00644
+		action :nothing
+		variables(
+			:key_auth    => node['wpserver']['wp']['key-auth'],
+			:key_secure  => node['wpserver']['wp']['key-secure'],
+			:key_logged  => node['wpserver']['wp']['key-logged'],
+			:key_nonce   => node['wpserver']['wp']['key-nonce'],
+			:salt_auth   => node['wpserver']['wp']['salt-auth'],
+			:salt_secure => node['wpserver']['wp']['salt-secure'],
+			:salt_logged => node['wpserver']['wp']['salt-logged'],
+			:salt_nonce  => node['wpserver']['wp']['salt-nonce'],
+			:colon       => node['wpserver']['into']['colon'],
+			:port        => node['httpd']['port']
+		)
+		not_if {File.exist?("/vagrant/wordpress/wp-config.php")}
+	end
+	e.run_action(:create)
 end
-e.run_action(:create)
 
 
 

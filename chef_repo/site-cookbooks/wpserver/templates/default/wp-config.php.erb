@@ -92,8 +92,8 @@ define('WP_DEBUG', false);
 // このサイトのURLを設定します
 // 手動で設定する場合にはこの命令をコメントアウトするか削除する
 //-------------------------------------------------------------------------------
-define('WP_HOME', 'http://<%= node['ip-address']['local'] %>/wordpress/');
-define('WP_SITEURL', 'http://<%= node['ip-address']['local'] %>/wordpress/');
+define('WP_HOME', 'http://<%= node['ip-address']['local'] %><%= @colon %><%= @port %>/wordpress/');
+define('WP_SITEURL', 'http://<%= node['ip-address']['local'] %><%= @colon %><%= @port %>/wordpress/');
 // 上記の内容でDataBaseを変更します
 define('RELOCATE', true);
 //-------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ default['wpserver']['save-content']['name'] = []
 
 
 default['wpserver']['into']['nonspace'] = ''
+default['wpserver']['into']['colon'] = ':'
 
 default['wpserver']['ht-permission']['order']['true']  = 'order allow,deny'
 default['wpserver']['ht-permission']['order']['false'] = 'order deny,allow'
