@@ -2,6 +2,9 @@
 .DS_Store
 
 wp-local-server/wordpress/*
+wp-local-server/.htaccess
+wp-local-server/index.html
+wp-local-server/er/*
 
 /cookbooks
 
