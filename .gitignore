@@ -1,6 +1,8 @@
 .vagrant
 .DS_Store
 
+wp-local-server/wordpress/*
+
 /cookbooks
 
 # Bundler
