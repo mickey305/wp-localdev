@@ -13,7 +13,8 @@
 
 	"mysql-conf": {
 
-		"reset-rootpass-flag" : false
+		"reset-rootpass-flag"             : false,
+		"create-setting-mysqlbackup-flag" : true
 
 	},
 

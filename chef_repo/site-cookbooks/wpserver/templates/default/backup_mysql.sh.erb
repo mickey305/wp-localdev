@@ -1,0 +1,115 @@
+#!/bin/sh
+
+# バックアップファイルを何日分残しておくか
+period=<%= @days %>
+# バックアップファイルを保存するディレクトリ
+dirpath='/root/backup/mysql'
+# ファイル名を定義
+filename=`date +%y_%m_%d-%H%M%S`
+
+# mysqldump実行（バックアップファイルを作成）
+mysqldump --opt --all-databases --events　--default-character-set=binary　--u root --password='<%= @password %>' | gzip > $dirpath/$filename.sql.gz
+
+# パーミッションを変更
+chmod 700 $dirpath/$filename.sql.gz
+
+#
+# 過去数年の365日（約1年）毎のバックアップ
+# 過去365日（約1年）の30日（約1ヶ月）毎のバックアップ
+# 過去90日（約3ヶ月）の10日毎のバックアップ
+# 過去30日（約1ヶ月）の1日（24時間）毎のバックアップ
+# 過去24時間の3時間ごと（この部分はこのシェルスクリプトを実行する頻度で決まる）のバックアップに整理
+#
+# なおこのスケージューリングはUnixの時計によって挙動が異なる
+#
+# プロセスを強制的に終了させる場合
+# $ ps -aux | grep backup_mysql.sh
+# $ kill -9 プロセス番号
+# とコマンドを入力する
+#
+if test $period -le 30; then
+	for i in `seq 1 $period`
+	do
+		find $dirpath/ -name "*.sql.gz" -mtime $i | xargs ls -tr1 | tail -n +2 | xargs rm -f
+	done
+else
+	for i in `seq 1 30`
+	do
+		find $dirpath/ -name "*.sql.gz" -mtime $i | xargs ls -tr1 | tail -n +2 | xargs rm -f
+	done
+	if test $period -le 90; then
+		tmpcnt=30
+		while true
+		do
+			tmpcnt_ad=`expr $tmpcnt + 11`
+			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+			if test $period -le $tmpcnt; then
+				break
+			fi
+			tmpcnt=`expr $tmpcnt + 10`
+		done
+	else
+		tmpcnt=30
+		while true
+		do
+			tmpcnt_ad=`expr $tmpcnt + 11`
+			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+			if test 90 -le $tmpcnt; then
+				break
+			fi
+			tmpcnt=`expr $tmpcnt + 10`
+		done
+		if test $period -le 365;then
+			tmpcnt=90
+			while true
+			do
+				if test `expr $tmpcnt + 30` -gt 365; then
+					tmpcnt=365
+				fi
+				tmpcnt_ad=`expr $tmpcnt + 31`
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				if test $period -le $tmpcnt; then
+					break
+				fi
+				tmpcnt=`expr $tmpcnt + 30`
+			done
+		else
+			tmpcnt=90
+			while true
+			do
+				if test `expr $tmpcnt + 30` -gt 365; then
+					tmpcnt=365
+				fi
+				tmpcnt_ad=`expr $tmpcnt + 31`
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				if test 365 -le $tmpcnt; then
+					break
+				fi
+				tmpcnt=`expr $tmpcnt + 30`
+			done
+			tmpcnt=365
+			while true
+			do
+				if test `expr $tmpcnt + 365` -gt $period; then
+					tmpcnt=$period
+				fi
+				tmpcnt_ad=`expr $tmpcnt + 366`
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				if test $period -le $tmpcnt; then
+					break
+				fi
+				tmpcnt=`expr $tmpcnt + 365`
+			done
+		fi
+	fi	
+fi
+
+
+# 古いバックアップファイルを削除
+find $dirpath/ -mtime +$period -name "*.sql.gz" | xargs rm -f
+find $dirpath/ -mtime $period -name "*.sql.gz" | xargs rm -f
+
+
+# echo "backup_mysql job done"
+
+

@@ -133,4 +133,69 @@ end
 
 
 
+if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
+	# back up mySQL DB
+	#
+	if !File.exist?("/root/backup/") then
+		e = script "mkdir-/root/backup/" do
+			interpreter "bash"
+			user "root"
+			action :nothing
+			code "mkdir /root/backup/"
+		end
+		e.run_action(:run)
+	end
+	if !File.exist?("/root/backup/mysql/") then
+		e = script "mkdir-/root/backup/mysql/" do
+			interpreter "bash"
+			user "root"
+			action :nothing
+			code "mkdir /root/backup/mysql"
+		end
+		e.run_action(:run)
+	end
+	# initialize setting files
+	e = execute "delete-/etc/cron.d/backup_mysql" do
+		command "rm -f /etc/cron.d/backup_mysql"
+		action :nothing
+		only_if {File.exist?("/etc/cron.d/backup_mysql")}
+	end
+	e.run_action(:run)
+	e = execute "delete-/root/backup_mysql.sh" do
+		command "rm -f /root/backup_mysql.sh"
+		action :nothing
+		only_if {File.exist?("/root/backup_mysql.sh")}
+	end
+	e.run_action(:run)
 
+
+
+	# insert backup setting files
+	e = template "backup_mysql.sh" do
+		path "/root/backup_mysql.sh"
+		source "backup_mysql.sh.erb"
+		mode 0700
+		action :nothing
+		variables(
+			:days     => node['wpserver']['db']['store-days'],
+			:password => node['wpserver']['db']['rootpass']
+		)
+		not_if {File.exist?("/root/backup_mysql.sh")}
+	end
+	e.run_action(:create)
+	
+	# シェルスクリプトを実行させる頻度を設定
+	if !File.exist?("/etc/cron.d/backup_mysql") then
+		e = script "write /etc/cron.d" do
+			interpreter "bash"
+			user "root"
+			action :nothing
+			code <<-EOL
+				echo "00 0-23/3 * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
+			EOL
+			only_if {File.exist?("/root/backup_mysql.sh")}
+		end
+		e.run_action(:run)
+	end
+
+end

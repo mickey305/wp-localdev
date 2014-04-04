@@ -16,6 +16,7 @@ default['wpserver']['db']['pass']     = 'wp_password'
 default['wpserver']['db']['host']         = 'localhost'
 default['wpserver']['db']['rootpass']     = ''
 default['wpserver']['db']['old-rootpass'] = ''
+default['wpserver']['db']['store-days']   = 14
 
 
 default['wpserver']['tmp-file']['sql']['path'] = '/tmp/sql_file/'

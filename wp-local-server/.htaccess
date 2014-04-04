@@ -1,0 +1,34 @@
+# error file path
+ErrorDocument 401 /er/unauthorized.html
+ErrorDocument 403 /er/forbidden.html
+ErrorDocument 404 /er/notfound.html
+ErrorDocument 500 /er/intserverr.html
+
+# permit access
+DirectoryIndex index.php index.html .html .php
+
+
+
+<Files ~ "\.DS_Store$">
+	deny from all
+</Files>
+
+<Files "Vagrantfile">
+	deny from all
+</Files>
+
+<Files ~ "xmlrpc.php$">
+	order deny,allow
+	deny from all
+	
+</Files>
+
+
+
+#<Files "wp-login.php">
+#	order deny,allow
+#	deny from all
+#	allow from example.ne.jp
+#</Files>
+
+
