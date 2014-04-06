@@ -191,7 +191,8 @@ if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
 			user "root"
 			action :nothing
 			code <<-EOL
-				echo "00 0-23/3 * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
+				echo "5 */3 * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
+				# echo "*/5 * * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
 			EOL
 			only_if {File.exist?("/root/backup_mysql.sh")}
 		end

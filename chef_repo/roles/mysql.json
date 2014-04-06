@@ -19,7 +19,7 @@
 				"pass"         : "HFt33uZa80A",
 
 				// back up mysql DB sql-file keep term
-				"store-days"   : 645
+				"store-days"   : 365
 
 
 			}

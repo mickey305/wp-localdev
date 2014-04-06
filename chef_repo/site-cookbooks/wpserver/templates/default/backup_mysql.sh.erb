@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+# set -e
 
 # バックアップファイルを何日分残しておくか
 period=<%= @days %>
@@ -7,8 +9,13 @@ dirpath='/root/backup/mysql'
 # ファイル名を定義
 filename=`date +%y_%m_%d-%H%M%S`
 
+# set +e
+
 # mysqldump実行（バックアップファイルを作成）
-mysqldump --opt --all-databases --events　--default-character-set=binary　--u root --password='<%= @password %>' | gzip > $dirpath/$filename.sql.gz
+mysqldump --opt --all-databases --events --default-character-set=binary --u root --password='<%= @password %>' | gzip > $dirpath/$filename.sql.gz
+# mysqldump -A -u root --p'<%= @password %>' --opt | gzip > $dirpath/$filename.sql.gz
+
+# set -e
 
 # パーミッションを変更
 chmod 700 $dirpath/$filename.sql.gz
@@ -30,19 +37,19 @@ chmod 700 $dirpath/$filename.sql.gz
 if test $period -le 30; then
 	for i in `seq 1 $period`
 	do
-		find $dirpath/ -name "*.sql.gz" -mtime $i | xargs ls -tr1 | tail -n +2 | xargs rm -f
+		find $dirpath/ -name "*.sql.gz" -mtime $i | sort | tail -n +2 | xargs rm -f
 	done
 else
 	for i in `seq 1 30`
 	do
-		find $dirpath/ -name "*.sql.gz" -mtime $i | xargs ls -tr1 | tail -n +2 | xargs rm -f
+		find $dirpath/ -name "*.sql.gz" -mtime $i | sort | tail -n +2 | xargs rm -f
 	done
 	if test $period -le 90; then
 		tmpcnt=30
 		while true
 		do
 			tmpcnt_ad=`expr $tmpcnt + 11`
-			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | sort | tail -n +2 | xargs rm -f
 			if test $period -le $tmpcnt; then
 				break
 			fi
@@ -53,13 +60,13 @@ else
 		while true
 		do
 			tmpcnt_ad=`expr $tmpcnt + 11`
-			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+			find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | sort | tail -n +2 | xargs rm -f
 			if test 90 -le $tmpcnt; then
 				break
 			fi
 			tmpcnt=`expr $tmpcnt + 10`
 		done
-		if test $period -le 365;then
+		if test $period -le 365; then
 			tmpcnt=90
 			while true
 			do
@@ -67,7 +74,7 @@ else
 					tmpcnt=365
 				fi
 				tmpcnt_ad=`expr $tmpcnt + 31`
-				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | sort | tail -n +2 | xargs rm -f
 				if test $period -le $tmpcnt; then
 					break
 				fi
@@ -81,7 +88,7 @@ else
 					tmpcnt=365
 				fi
 				tmpcnt_ad=`expr $tmpcnt + 31`
-				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | sort | tail -n +2 | xargs rm -f
 				if test 365 -le $tmpcnt; then
 					break
 				fi
@@ -94,7 +101,7 @@ else
 					tmpcnt=$period
 				fi
 				tmpcnt_ad=`expr $tmpcnt + 366`
-				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | xargs ls -tr1 | tail -n +2 | xargs rm -f
+				find $dirpath/ -name "*.sql.gz" -mtime +$tmpcnt -mtime -$tmpcnt_ad | sort | tail -n +2 | xargs rm -f
 				if test $period -le $tmpcnt; then
 					break
 				fi
