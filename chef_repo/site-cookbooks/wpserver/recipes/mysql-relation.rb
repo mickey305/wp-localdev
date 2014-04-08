@@ -185,6 +185,7 @@ if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
 	e.run_action(:create)
 	
 	# シェルスクリプトを実行させる頻度を設定
+	# this point be setting frequency to execute a shell script
 	if !File.exist?("/etc/cron.d/backup_mysql") then
 		e = script "write /etc/cron.d" do
 			interpreter "bash"
