@@ -194,10 +194,38 @@ if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
 			code <<-EOL
 				echo "5 */3 * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
 				# echo "*/5 * * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
+				# echo "2 * * * * root /root/backup_mysql.sh" > /etc/cron.d/backup_mysql
 			EOL
 			only_if {File.exist?("/root/backup_mysql.sh")}
 		end
 		e.run_action(:run)
+	end
+
+
+	# create db backup command
+	# how to use : $ sudo bumysql/backupmysql/mysqlbackup
+	if File.exist?("/root/backup_mysql.sh") then
+		e = execute "create mysql backup command" do
+			action :nothing
+			# not_if {File.exist?("/usr/bin/bumysql")}
+			command "cp -f /root/backup_mysql.sh /usr/bin/bumysql"
+		end
+		e.run_action(:run)
+		# symbolic command names list
+		%w{
+			mysqlbackup
+			backupmysql
+		}.each do |i|
+			if !File.exist?("/usr/bin/#{i}") then
+				# create symbolic link
+				e = execute "create command link #{i}" do
+					action :nothing
+					only_if {File.exist?("/usr/bin/bumysql")}
+					command "ln -s /usr/bin/bumysql /usr/bin/#{i}"
+				end
+				e.run_action(:run)
+			end
+		end
 	end
 
 end
