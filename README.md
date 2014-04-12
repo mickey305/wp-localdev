@@ -18,7 +18,7 @@ In short, this cookbooks are only available in a temporary test environment.
 * [chef][opscode] 11.10.x
 	* knife
 * ruby 1.9.4-pxxx or higher(e.g. for rbenv)
-	* openssl
+	* openssl(don't use version 1.0.1x - 1.0.2x)
 * web browser
 	* web browser of webkit system(e.g. chrome, safari)
 	* web browser of mozilla system(e.g. firefox)
