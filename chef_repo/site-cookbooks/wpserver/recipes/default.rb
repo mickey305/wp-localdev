@@ -39,15 +39,17 @@ e = script "mkdir-/tmp/wpbu" do
 end
 e.run_action(:run)
 if node['pkg-wp']['update-flag'] then
-	node['wpserver']['save-content']['name'].each do |tmpa|
-		e = script "copy_#{tmpa}_to-tmp" do
-			interpreter "bash"
-			user "root"
-			code "cp -fR /vagrant/wordpress/#{tmpa} /tmp/wpbu/"
-			action :nothing
-			only_if {File.exist?("/vagrant/wordpress/#{tmpa}")}
+	if !node['wpserver']['save-content']['name'].empty? then
+		node['wpserver']['save-content']['name'].each do |tmpa|
+			e = script "copy_#{tmpa}_to-tmp" do
+				interpreter "bash"
+				user "root"
+				code "cp -fR /vagrant/wordpress/#{tmpa} /tmp/wpbu/"
+				action :nothing
+				only_if {File.exist?("/vagrant/wordpress/#{tmpa}")}
+			end
+			e.run_action(:run)
 		end
-		e.run_action(:run)
 	end
 else
 	e = script "copy_wpdir_to-tmp" do
@@ -87,19 +89,23 @@ include_recipe "wpserver::wp-relation"
 
 if node['pkg-wp']['update-flag'] then
 
-	# copy back up file
-	node['wpserver']['save-content']['name'].each do |tmpb|
-		e = script "copy_#{tmpb}" do
-			interpreter "bash"
-			user "root"
-			code <<-EOF
-				cp -fR /tmp/wpbu/#{tmpb} /vagrant/wordpress/
-				rm -rf /tmp/wpbu/#{tmpb}
-			EOF
-			action :nothing
-			only_if {File.exist?("/tmp/wpbu/#{tmpb}")}
+	if !node['wpserver']['save-content']['name'].empty? then
+
+		# copy back up file
+		node['wpserver']['save-content']['name'].each do |tmpb|
+			e = script "copy_#{tmpb}" do
+				interpreter "bash"
+				user "root"
+				code <<-EOF
+					cp -fR /tmp/wpbu/#{tmpb} /vagrant/wordpress/
+					rm -rf /tmp/wpbu/#{tmpb}
+				EOF
+				action :nothing
+				only_if {File.exist?("/tmp/wpbu/#{tmpb}")}
+			end
+			e.run_action(:run)
 		end
-		e.run_action(:run)
+
 	end
 
 else
