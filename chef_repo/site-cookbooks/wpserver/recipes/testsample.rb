@@ -24,3 +24,4 @@ print "  ***************************** sample2 result -> "
 p File.exist?("/vagrant/sample2.txt")
 
 
+puts !node['wpserver']['save-content']['name'].empty?
