@@ -17,7 +17,7 @@ CentOS(Red Hat系) + Apache + mySQL + wordpress
 * [chef][opscode] 11.10.x
 	* knife
 * ruby 1.9.4-pxxx or higher(e.g. for rbenv)
-	* openssl
+	* openssl(1.0.1系から1.0.2系は使用しない)
 * ウェブブラウザ
 	* webkit系(e.g. chrome, safari)
 	* mozilla系(e.g. firefox)
