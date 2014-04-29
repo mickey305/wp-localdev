@@ -6,6 +6,7 @@ wp-local-server/.htaccess
 wp-local-server/index.html
 wp-local-server/er/*
 
+/boxes
 /cookbooks
 
 # Bundler
