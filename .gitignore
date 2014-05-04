@@ -7,11 +7,13 @@ wp-local-server/index.html
 wp-local-server/er/*
 
 /boxes
-/cookbooks
+#/cookbooks
 
 # Bundler
 bin/*
 .bundle/*
+
+/vendor
 
 .kitchen/
 .kitchen.local.yml
