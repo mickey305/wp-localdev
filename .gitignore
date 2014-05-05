@@ -6,11 +6,14 @@ wp-local-server/.htaccess
 wp-local-server/index.html
 wp-local-server/er/*
 
-/cookbooks
+/boxes
+#/cookbooks
 
 # Bundler
 bin/*
 .bundle/*
+
+/vendor
 
 .kitchen/
 .kitchen.local.yml

@@ -14,6 +14,7 @@
 	"mysql-conf": {
 
 		"reset-rootpass-flag"             : false,
+		// a flag to create and do backup and restore command
 		"create-setting-mysqlbackup-flag" : true
 
 	},
