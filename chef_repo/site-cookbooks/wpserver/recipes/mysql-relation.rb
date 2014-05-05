@@ -134,7 +134,7 @@ end
 
 
 if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
-	# back up mySQL DB
+	# back up MySQL DB
 	#
 	if !File.exist?("/root/backup/") then
 		e = script "mkdir-/root/backup/" do
@@ -227,5 +227,58 @@ if node['mysql-conf']['create-setting-mysqlbackup-flag'] then
 			end
 		end
 	end
+
+
+	#/////////////////////////////////////////////////////////
+	# restore MySQL DB
+
+	# initialize setting files
+	e = execute "delete-/root/restore_mysql.sh" do
+		command "rm -f /root/restore_mysql.sh"
+		action :nothing
+		only_if {File.exist?("/root/restore_mysql.sh")}
+	end
+	e.run_action(:run)
+
+
+	# insert restore setting files
+	e = template "restore_mysql.sh" do
+		path "/root/restore_mysql.sh"
+		source "restore_mysql.sh.erb"
+		mode 0700
+		action :nothing
+		variables :passwd => node['wpserver']['db']['rootpass']
+		not_if {File.exist?("/root/restore_mysql.sh")}
+	end
+	e.run_action(:create)
+
+
+	# create db restore command
+	# how to use : $ sudo rstmysql/restoremysql/mysqlrestore
+	if File.exist?("/root/restore_mysql.sh") then
+		e = execute "create mysql restore command" do
+			action :nothing
+			# not_if {File.exist?("/usr/bin/rstmysql")}
+			command "cp -f /root/restore_mysql.sh /usr/bin/rstmysql"
+		end
+		e.run_action(:run)
+		# symbolic command names list
+		%w{
+			mysqlrestore
+			restoremysql
+		}.each do |i|
+			if !File.exist?("/usr/bin/#{i}") then
+				# create symbolic link
+				e = execute "create command link #{i}" do
+					action :nothing
+					only_if {File.exist?("/usr/bin/rstmysql")}
+					command "ln -s /usr/bin/rstmysql /usr/bin/#{i}"
+				end
+				e.run_action(:run)
+			end
+		end
+	end
+
+
 
 end

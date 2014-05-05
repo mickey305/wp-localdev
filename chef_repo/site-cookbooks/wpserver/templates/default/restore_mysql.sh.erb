@@ -1,0 +1,66 @@
+#!/bin/sh
+
+tmppath='/root/backup/sql_tmp'
+
+# バックアップファイルが保存されたディレクトリ
+dirpath='/root/backup/mysql'
+
+echo "+---------------------------------------------------------------------+"
+# echo "|  Backup File List  path($dirpath/)                        |"
+echo "|  Backup File List                                                   |"
+echo "+---------------------------------------------------------------------+"
+ls -t $dirpath/
+echo "+---------------------------------------------------------------------+"
+
+
+echo -n "Please insert the file name to restore MySQL Databases : "
+read res
+
+if [ -n "$res" -a -f $dirpath/$res ]; then
+	if [[ $res != *./* ]]; then
+		if [[ $res == *.sql.gz* ]]; then
+
+
+
+			echo -n "Are you ready to restore?　(y|n) : "
+			read signal
+
+
+
+			case $signal in
+
+				y )	sql=`echo $res | sed -e 's/\.sql.gz/.sql/'`
+					# # echo "$sql"
+
+					mkdir $tmppath/
+
+					cp -f $dirpath/$res $tmppath/
+					gzip -d $tmppath/$res
+					chmod 777 $tmppath/$sql
+					mysql -u root --password="<%= @passwd %>" < $tmppath/$sql
+
+
+					# rm -f $tmppath/$sql
+					rm -fr $tmppath/
+
+					echo "MySQL DB Restore Command executed."
+					;;
+				n )	echo "Restore Command was canceled."
+					;;
+				* )	echo "Input Error."
+					;;
+
+			esac
+
+
+
+		else
+			echo "Ext Maching Error."
+		fi
+	else
+		echo "Permission Error."
+	fi
+else
+	echo "Input Error."
+fi
+
